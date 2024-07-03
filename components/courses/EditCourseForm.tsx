@@ -18,6 +18,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { ComboBox } from "@/components/custom/ComboBox";
 import toast from "react-hot-toast";
+import { Loader2, Trash } from "lucide-react";
+import Link from "next/link";
+import RichEditor from "@/components/custom/RichEditor";
+import FileUpload from "@/components/custom/FileUpload";
 
 const formSchema = z.object({
 	title: z.string().min(2, {
@@ -36,11 +40,23 @@ const formSchema = z.object({
 	price: z.coerce.number().optional(),
 });
 
-interface EditCourseProps {
-	course: Course
+interface EditCourseFormProps {
+	course: Course;
+  categories: {
+    label: string; // name of category
+    value: string; // categoryId
+    subCategories: { label: string; value: string }[];
+  }[];
+  levels: { label: string; value: string }[];
+  isCompleted: boolean;
 }
 
-const EditCourseForm = ({ course }: EditCourseProps) => {
+const EditCourseForm = ({
+  course,
+  categories,
+  levels,
+  isCompleted,
+}: EditCourseFormProps) => {
 
 	const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,11 +72,13 @@ const EditCourseForm = ({ course }: EditCourseProps) => {
     },
   });
 
+	const { isValid, isSubmitting } = form.formState;
+
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       // const response = await axios.put("/api/courses", values);
       // router.push(`/instructor/courses/${response.data.id}/basic`);
-      toast.success("New Course Created");
+      toast.success("Saved");
     } catch (err) {
       console.log("Failed to create new course", err);
       toast.error("Something went wrong!");
@@ -107,6 +125,135 @@ const EditCourseForm = ({ course }: EditCourseProps) => {
 					)}
 				/>
 
+				<FormField
+					control={form.control}
+					name="description"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Description</FormLabel>
+							<FormControl>
+									<RichEditor
+                    placeholder="What is this course about?"
+                    {...field}
+                  />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<div className="flex flex-wrap gap-10">
+					<FormField
+						control={form.control}
+						name="categoryId"
+						render={({ field }) => (
+							<FormItem className="flex flex-col">
+								<FormLabel>
+									Category <span className="text-red-500">*</span>
+								</FormLabel>
+								<FormControl>
+									<ComboBox options={categories} {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="subCategoryId"
+						render={({ field }) => (
+							<FormItem className="flex flex-col">
+								<FormLabel>
+									Subcategory <span className="text-red-500">*</span>
+								</FormLabel>
+								<FormControl>
+									<ComboBox
+										options={
+											categories.find(
+												(category) =>
+													category.value === form.watch("categoryId")
+											)?.subCategories || []
+										}
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="levelId"
+						render={({ field }) => (
+							<FormItem className="flex flex-col">
+								<FormLabel>
+									Level <span className="text-red-500">*</span>
+								</FormLabel>
+								<FormControl>
+									<ComboBox options={levels} {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+
+				<FormField
+					control={form.control}
+					name="imageUrl"
+					render={({ field }) => (
+						<FormItem className="flex flex-col">
+							<FormLabel>
+								Couse Banner <span className="text-red-500">*</span>
+							</FormLabel>
+							<FormControl>
+								<FileUpload
+									value={field.value || ""}
+									onChange={(url) => field.onChange(url)}
+									endpoint="courseBanner"
+									page="Edit Course"
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="price"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>
+								Price <span className="text-red-500">*</span> (USD)
+							</FormLabel>
+							<FormControl>
+								<Input
+									type="number"
+									step="0.01"
+									placeholder="29.99"
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<div className="flex gap-5">
+					<Link href="/instructor/courses">
+						<Button type="button" variant="outline">Cancel</Button>
+					</Link>
+					<Button type="submit" disabled={!isValid || isSubmitting}>
+						{isSubmitting ? (
+							<Loader2 className="h-4 w-4 animate-spin" />
+						) : (
+							"Save"
+						)}
+					</Button>
+				</div>
 				
 			</form>
 		</Form>
