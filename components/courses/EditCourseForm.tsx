@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Course } from "@prisma/client";
 import axios from "axios";
-import router from "next/router";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -57,7 +57,9 @@ const EditCourseForm = ({
   levels,
   isCompleted,
 }: EditCourseFormProps) => {
-
+	const router = useRouter();
+  const pathname = usePathname();
+	
 	const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -76,11 +78,11 @@ const EditCourseForm = ({
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // const response = await axios.put("/api/courses", values);
-      // router.push(`/instructor/courses/${response.data.id}/basic`);
-      toast.success("Saved");
+      await axios.patch(`/api/courses/${course.id}`, values);
+      toast.success("Course Updated");
+      router.refresh();
     } catch (err) {
-      console.log("Failed to create new course", err);
+      console.log("Failed to update the course", err);
       toast.error("Something went wrong!");
     }
   };
