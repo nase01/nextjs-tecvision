@@ -87,96 +87,48 @@ const EditCourseForm = ({
     }
   };
 
+	const routes = [
+    {
+      label: "Basic Information",
+      path: `/instructor/courses/${course.id}/basic`,
+    },
+    { label: "Curriculum", path: `/instructor/courses/${course.id}/sections` },
+  ];
+
   return (
-    <Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(onSubmit)}
-				className="space-y-8 mt-10"
-			>
-				<FormField
-					control={form.control}
-					name="title"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Title</FormLabel>
-							<FormControl>
-								<Input
-									placeholder="Ex: Web Development for Beginners"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+		<>
+			<div className="flex flex-col gap-2 sm:flex-row sm:justify-between mb-7">
+				<div className="flex gap-5">
+					{routes.map((route) => (
+            <Link key={route.path} href={route.path}>
+              <Button variant={pathname === route.path ? "default" : "outline"}>
+                {route.label}
+              </Button>
+            </Link>
+          ))}
+				</div>
 
-				<FormField
-					control={form.control}
-					name="subtitle"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Subtitle</FormLabel>
-							<FormControl>
-								<Input
-									placeholder="Ex: Become a Full-stack developer with just ONE course. HTML, CSS, Javascript, Node, React, MongoDB and more!"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+				<div className="flex gap-5 items-start">
+          <Button variant="outline">Publish</Button>
+          <Button><Trash className="h-4 w-4" /></Button>
+        </div>
+				
+			</div>
 
-				<FormField
-					control={form.control}
-					name="description"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Description</FormLabel>
-							<FormControl>
-									<RichEditor
-                    placeholder="What is this course about?"
-                    {...field}
-                  />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<div className="flex flex-wrap gap-10">
+			<Form {...form}>
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					className="space-y-8 my-10"
+				>
 					<FormField
 						control={form.control}
-						name="categoryId"
+						name="title"
 						render={({ field }) => (
-							<FormItem className="flex flex-col">
-								<FormLabel>
-									Category <span className="text-red-500">*</span>
-								</FormLabel>
+							<FormItem>
+								<FormLabel>Title</FormLabel>
 								<FormControl>
-									<ComboBox options={categories} {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-
-					<FormField
-						control={form.control}
-						name="subCategoryId"
-						render={({ field }) => (
-							<FormItem className="flex flex-col">
-								<FormLabel>
-									Subcategory <span className="text-red-500">*</span>
-								</FormLabel>
-								<FormControl>
-									<ComboBox
-										options={
-											categories.find(
-												(category) =>
-													category.value === form.watch("categoryId")
-											)?.subCategories || []
-										}
+									<Input
+										placeholder="Ex: Web Development for Beginners"
 										{...field}
 									/>
 								</FormControl>
@@ -187,78 +139,154 @@ const EditCourseForm = ({
 
 					<FormField
 						control={form.control}
-						name="levelId"
+						name="subtitle"
 						render={({ field }) => (
-							<FormItem className="flex flex-col">
-								<FormLabel>
-									Level <span className="text-red-500">*</span>
-								</FormLabel>
+							<FormItem>
+								<FormLabel>Subtitle</FormLabel>
 								<FormControl>
-									<ComboBox options={levels} {...field} />
+									<Input
+										placeholder="Ex: Become a Full-stack developer with just ONE course. HTML, CSS, Javascript, Node, React, MongoDB and more!"
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
 						)}
 					/>
-				</div>
 
-				<FormField
-					control={form.control}
-					name="imageUrl"
-					render={({ field }) => (
-						<FormItem className="flex flex-col">
-							<FormLabel>
-								Couse Banner <span className="text-red-500">*</span>
-							</FormLabel>
-							<FormControl>
-								<FileUpload
-									value={field.value || ""}
-									onChange={(url) => field.onChange(url)}
-									endpoint="courseBanner"
-									page="Edit Course"
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name="price"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>
-								Price <span className="text-red-500">*</span> (USD)
-							</FormLabel>
-							<FormControl>
-								<Input
-									type="number"
-									step="0.01"
-									placeholder="29.99"
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<div className="flex gap-5">
-					<Link href="/instructor/courses">
-						<Button type="button" variant="outline">Cancel</Button>
-					</Link>
-					<Button type="submit" disabled={!isValid || isSubmitting}>
-						{isSubmitting ? (
-							<Loader2 className="h-4 w-4 animate-spin" />
-						) : (
-							"Save"
+					<FormField
+						control={form.control}
+						name="description"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Description</FormLabel>
+								<FormControl>
+										<RichEditor
+											placeholder="What is this course about?"
+											{...field}
+										/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
 						)}
-					</Button>
-				</div>
-				
-			</form>
-		</Form>
+					/>
+
+					<div className="flex flex-wrap gap-10">
+						<FormField
+							control={form.control}
+							name="categoryId"
+							render={({ field }) => (
+								<FormItem className="flex flex-col">
+									<FormLabel>
+										Category <span className="text-red-500">*</span>
+									</FormLabel>
+									<FormControl>
+										<ComboBox options={categories} {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="subCategoryId"
+							render={({ field }) => (
+								<FormItem className="flex flex-col">
+									<FormLabel>
+										Subcategory <span className="text-red-500">*</span>
+									</FormLabel>
+									<FormControl>
+										<ComboBox
+											options={
+												categories.find(
+													(category) =>
+														category.value === form.watch("categoryId")
+												)?.subCategories || []
+											}
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="levelId"
+							render={({ field }) => (
+								<FormItem className="flex flex-col">
+									<FormLabel>
+										Level <span className="text-red-500">*</span>
+									</FormLabel>
+									<FormControl>
+										<ComboBox options={levels} {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</div>
+
+					<FormField
+						control={form.control}
+						name="imageUrl"
+						render={({ field }) => (
+							<FormItem className="flex flex-col">
+								<FormLabel>
+									Couse Banner <span className="text-red-500">*</span>
+								</FormLabel>
+								<FormControl>
+									<FileUpload
+										value={field.value || ""}
+										onChange={(url) => field.onChange(url)}
+										endpoint="courseBanner"
+										page="Edit Course"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="price"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>
+									Price <span className="text-red-500">*</span> (USD)
+								</FormLabel>
+								<FormControl>
+									<Input
+										type="number"
+										step="0.01"
+										placeholder="29.99"
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<div className="flex gap-5">
+						<Link href="/instructor/courses">
+							<Button type="button" variant="outline">Cancel</Button>
+						</Link>
+						<Button type="submit" disabled={!isValid || isSubmitting}>
+							{isSubmitting ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : (
+								"Save"
+							)}
+						</Button>
+					</div>
+					
+				</form>
+			</Form>
+		</>
   )
 }
 
