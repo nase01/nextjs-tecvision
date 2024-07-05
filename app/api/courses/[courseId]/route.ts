@@ -20,7 +20,7 @@ export const PATCH = async (
     if (!userId) {
       return new Response("Unauthorized", { status: 401 });
     }
-
+    console.log(values)
     const course = await db.course.update({
       where: { id: courseId, instructorId: userId },
       data: { ...values },
