@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (
   req: NextRequest,
-  { params }: { params: { courseId: string; sectionId: string } }
+  { params }: { params: { courseId: string; sectionId: string, resourceId: string } }
 ) => {
   try {
     const { userId } = auth()
@@ -13,7 +13,7 @@ export const POST = async (
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { courseId, sectionId } = params;
+    const { courseId, sectionId, resourceId } = params;
 
     const course = await db.course.findUnique({
       where: {
@@ -37,19 +37,16 @@ export const POST = async (
       return new NextResponse("Section Not Found", { status: 404 });
     }
 
-    const { name, fileUrl } = await req.json();
-
-    const resource = await db.resource.create({
-      data: {
-        name,
-        fileUrl,
+    await db.resource.delete({
+      where: {
+        id: resourceId,
         sectionId,
       },
     });
-
-    return NextResponse.json(resource, { status: 200 });
+    
+    return NextResponse.json("Resource deleted", { status: 200 });
   } catch (err) {
-    console.log("[resources_POST", err);
+    console.log("[resourceId_DELETE", err);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 };
