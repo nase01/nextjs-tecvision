@@ -22,6 +22,7 @@ import { Loader2, Trash } from "lucide-react";
 import Link from "next/link";
 import RichEditor from "@/components/custom/RichEditor";
 import FileUpload from "@/components/custom/FileUpload";
+import Delete from "@/components/custom/Delete";
 
 const formSchema = z.object({
 	title: z.string().min(2, {
@@ -110,7 +111,7 @@ const EditCourseForm = ({
 
 				<div className="flex gap-5 items-start">
           <Button variant="outline">Publish</Button>
-          <Button><Trash className="h-4 w-4" /></Button>
+          <Delete item="course" courseId={course.id} />
         </div>
 				
 			</div>
