@@ -23,6 +23,7 @@ import Link from "next/link";
 import RichEditor from "@/components/custom/RichEditor";
 import FileUpload from "@/components/custom/FileUpload";
 import Delete from "@/components/custom/Delete";
+import PublishButton from "@/components/custom/PublishButton";
 
 const formSchema = z.object({
 	title: z.string().min(2, {
@@ -110,7 +111,12 @@ const EditCourseForm = ({
 				</div>
 
 				<div className="flex gap-5 items-start">
-          <Button variant="outline">Publish</Button>
+					<PublishButton
+            disabled={!isCompleted}
+            courseId={course.id}
+            isPublished={course.isPublished}
+            page="Course"
+          />
           <Delete item="course" courseId={course.id} />
         </div>
 				
@@ -126,7 +132,7 @@ const EditCourseForm = ({
 						name="title"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Title</FormLabel>
+								<FormLabel>Title <span className="text-red-500">*</span></FormLabel>
 								<FormControl>
 									<Input
 										placeholder="Ex: Web Development for Beginners"
@@ -160,7 +166,7 @@ const EditCourseForm = ({
 						name="description"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Description</FormLabel>
+								<FormLabel>Description <span className="text-red-500">*</span></FormLabel>
 								<FormControl>
 										<RichEditor
 											placeholder="What is this course about?"
