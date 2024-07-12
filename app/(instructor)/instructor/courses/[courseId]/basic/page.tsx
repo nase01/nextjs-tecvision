@@ -1,4 +1,5 @@
 import EditCourseForm from "@/components/courses/EditCourseForm"
+import AlertBanner from "@/components/custom/AlertBanner";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation";
@@ -52,6 +53,11 @@ const CourseBasics = async ({ params }: { params: { courseId: string } }) => {
 
   return (
     <div className="px-10">
+      <AlertBanner 
+        isCompleted={isCompleted} 
+        missingFieldsCount={missingFieldsCount} 
+        requiredFieldsCount={requiredFieldsCount}
+      />
       <EditCourseForm 
         course={course}
         categories={categories.map((category) => ({
