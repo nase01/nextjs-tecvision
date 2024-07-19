@@ -2,22 +2,62 @@
 
 import { Course } from "@prisma/client"
 import { ColumnDef } from "@tanstack/react-table"
-import { Pencil } from "lucide-react"
+import { Pencil, ArrowUpDown } from "lucide-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
   
 export const columns: ColumnDef<Course>[] = [
 	{
 		accessorKey: "title",
-		header: "Title",
+		header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Title
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
 	},
 	{
 		accessorKey: "price",
-		header: "Price (USD)",
+		header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Price
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+		cell: ({ row }) => {
+      const price = parseFloat(row.getValue("price"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(price)
+ 
+      return <div>{formatted}</div>
+    },
 	},
 	{
 		accessorKey: "isPublished",
-		header: "Status",
+		header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
 		cell: ({row}) => {
 			const isPublished = row.getValue("isPublished") || false;
 
