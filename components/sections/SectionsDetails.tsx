@@ -9,12 +9,16 @@ import {
   Section,
 } from "@prisma/client";
 import { useState } from "react";
-import { File, Lock } from "lucide-react";
+import { File, Loader2, Lock } from "lucide-react";
 
 import ReadText from "@/components/custom/ReadText";
 import MuxPlayer from "@mux/mux-player-react";
 import Link from "next/link";
 import SectionMenu from "../layout/SectionMenu";
+import { Button } from "../ui/button";
+import axios from "axios";
+import toast from "react-hot-toast";
+import ProgressButton from "./ProgressButton";
 
 interface SectionsDetailsProps {
   course: Course & { sections: Section[] };
@@ -26,22 +30,52 @@ interface SectionsDetailsProps {
 }
 
 const SectionsDetails = ({
+  course,
   section,
   purchase,
   muxData,
   resources,
+  progress,
 }: SectionsDetailsProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const isLocked = !purchase && !section.isFree;
+
+  const buyCourse = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.post(`/api/courses/${course.id}/checkout`);
+      window.location.assign(response.data.url);
+    } catch (err) {
+      console.log("Failed to chechout course", err);
+      toast.error("Something went wrong!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="px-6 py-4 flex flex-col gap-5">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center">
         <h1 className="text-2xl font-bold max-md:mb-4">{section.title}</h1>
 
-        {
-          // Buy Button and Progress
-        }
+        <div className="flex gap-4">
+          <SectionMenu course={course} />
+          {!purchase ? (
+            <Button onClick={buyCourse}>
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <p>Buy this course</p>
+              )}
+            </Button>
+          ) : (
+            <ProgressButton
+              courseId={course.id}
+              sectionId={section.id}
+              isCompleted={!!progress?.isCompleted}
+            /> // !! converts falsy values to boolean false
+          )}
+        </div>
       </div>
 
       <ReadText value={section.description!} />
